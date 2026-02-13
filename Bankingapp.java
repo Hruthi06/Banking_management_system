@@ -116,7 +116,7 @@ class Bankingapp {
                     calculateInterest();
                     break;
                 case 6:
-                    System.out.println("Thank you for using our ank");
+                    System.out.println("Thank you for using our banking services");
                     System.exit(0);
                     break;
                 default:
@@ -141,19 +141,15 @@ class Bankingapp {
         String name = scanner.nextLine();
 
         System.out.println("Enter Email : ");
-        String email = scanner.nextLine();
-        if(!email.matches("^[a-zA-Z0_9+_.-]@[a-zA-Z0_9.-]+$") ) {
+        String email = scanner.nextLine().toLowerCase();
+
+        if (!email.matches("^[a-z0-9+_.-]+@[a-z0-9.-]+$")) {
             System.out.println("Invalid email");
             return;
         }
-        scanner.nextLine();
 
         System.out.println("Enter Balance : ");
         double balance = scanner.nextDouble();
-        scanner.nextLine();
-
-        System.out.println("Enter Account Type : ");
-        String accountType = scanner.nextLine();
         scanner.nextLine();
 
         if (choice==1) {
@@ -206,12 +202,31 @@ class Bankingapp {
         scanner.nextLine();
         account.withdraw(amount);
         System.out.println("Amount withdrawn successfully");
-        
+
     }
     public static void showDetails() {
-        
+        System.out.println("Enter account number : ");
+        int accNo = scanner.nextInt();
+        scanner.nextLine();
+        BankAccount account = findAccount(accNo);
+        if (account != null) {
+            account.showDetails();
+        }
+        else {
+            System.out.println("Account not found");
+        }
+       
     }
     public static void calculateInterest() {
-        
+        System.out.println("Enter account number : ");
+        int accNo = scanner.nextInt();
+        scanner.nextLine();
+        BankAccount account = findAccount(accNo);
+        if (account != null) {
+            account.calculateInterest();
+        }
+        else {
+            System.out.println("Account not found");
+        }
     }
 }
