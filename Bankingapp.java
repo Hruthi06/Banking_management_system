@@ -1,5 +1,35 @@
 import java.util.*;
 
+class InvalideEmailException extends Exception {
+    public InvalideEmailException(String message) {
+        super(message);
+    }
+}
+
+class InvalidAmountException extends Exception {
+    public InvalidAmountException(String message) {
+        super(message);
+    }
+}
+
+class InvalideAccountNumberException extends Exception {
+    public InvalideAccountNumberException(String message) {
+        super(message);
+    }
+}
+
+class InvalidNameException extends Exception {
+    public InvalidNameException(String message) {
+        super(message);
+    }
+}
+
+class InvalidBalanceException extends Exception {
+    public InvalidBalanceException(String message) {
+        super(message);
+    }
+}
+
 interface LoanService {
     void applyForLoan(double amount);
 
@@ -11,7 +41,9 @@ abstract class BankAccount {
     protected double balance;
     private String email;
 
-    public BankAccount(int accountNumber, String accountHolderName, double balance, String email) {
+    public BankAccount(int accountNumber, String accountHolderName, double balance, String email)
+            throws InvalideAccountNumberException, InvalidNameException, InvalidBalanceException,
+            InvalideEmailException {
         this.accountNumber = accountNumber;
         this.accountHolderName = accountHolderName;
         this.balance = balance;
@@ -23,6 +55,7 @@ abstract class BankAccount {
     }
 
     public void deposit(double amount) {
+
         if (amount > 0) {
             balance += amount;
             System.out.println("Amount deposited :" + amount);
@@ -54,9 +87,9 @@ abstract class BankAccount {
 class SavingsAccount extends BankAccount {
     private double interestRate = 5.0;
 
-    public SavingsAccount(int accNo, String name, double balance, String email) {
+    public SavingsAccount(int accNo, String name, double balance, String email) throws InvalideAccountNumberException,
+            InvalidNameException, InvalidBalanceException, InvalideEmailException {
         super(accNo, name, balance, email);
-
     }
 
     @Override
@@ -70,9 +103,9 @@ class SavingsAccount extends BankAccount {
 class CurrentAccount extends BankAccount {
     private double overDraftLimit = 10000;
 
-    public CurrentAccount(int accNo, String name, double balance, String email) {
+    public CurrentAccount(int accNo, String name, double balance, String email) throws InvalideAccountNumberException,
+            InvalidNameException, InvalidBalanceException, InvalideEmailException {
         super(accNo, name, balance, email);
-
     }
 
     @Override
@@ -84,6 +117,7 @@ class CurrentAccount extends BankAccount {
             System.out.println("Overdraft limit exceeded");
         }
     }
+
     @Override
     void calculateInterest() {
         System.out.println("No interest rate for current account");
@@ -95,9 +129,11 @@ class Bankingapp {
 
     static ArrayList<BankAccount> accounts = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         while (true) {
-            System.out.println("=====  BANK MENU  =====\n1. Create Account\n2. Deposit\n3. Withdraw\n4. Show Details\n5. Calculate Interest\n6. Exit");
+            System.out.println(
+                    "=====  BANK MENU  =====\n1. Create Account\n2. Deposit\n3. Withdraw\n4. Show Details\n5. Calculate Interest\n6. Exit");
             int choice = scanner.nextInt();
             switch (choice) {
                 case 1:
@@ -127,12 +163,13 @@ class Bankingapp {
         }
 
     }
+
     public static void createAccount() {
 
         System.out.println("1. Savings Account");
         System.out.println("2. Current Account");
         int choice = scanner.nextInt();
-        
+
         System.out.println("Enter account number : ");
         int accNo = scanner.nextInt();
         scanner.nextLine();
@@ -152,17 +189,22 @@ class Bankingapp {
         double balance = scanner.nextDouble();
         scanner.nextLine();
 
-        if (choice==1) {
-            accounts.add(new SavingsAccount(accNo, name, balance, email));
-        } else if (choice==2) {
-            accounts.add(new CurrentAccount(accNo, name, balance, email));
+        try {
+            if (choice == 1) {
+                accounts.add(new SavingsAccount(accNo, name, balance, email));
+            } else if (choice == 2) {
+                accounts.add(new CurrentAccount(accNo, name, balance, email));
+            } else {
+                System.out.println("Invalid choice");
+                return;
+            }
+            System.out.println("Account created successfully");
+        } catch (InvalideAccountNumberException | InvalidNameException | InvalidBalanceException
+                | InvalideEmailException e) {
+            System.out.println("Error creating account: " + e.getMessage());
         }
-        else {
-            System.out.println("Invalid choice");
-            return;
-        }
-        System.out.println("Account created successfully");    
     }
+
     static BankAccount findAccount(int accNo) {
         for (BankAccount account : accounts) {
             if (account.getAccountNumber() == accNo) {
@@ -171,7 +213,6 @@ class Bankingapp {
         }
         return null;
     }
-
 
     public static void deposit() {
         System.out.println("Enter account number : ");
@@ -188,6 +229,7 @@ class Bankingapp {
         account.deposit(amount);
         System.out.println("Amount deposited successfully");
     }
+
     public static void withdraw() {
         System.out.println("Enter account number : ");
         int accNo = scanner.nextInt();
@@ -204,6 +246,7 @@ class Bankingapp {
         System.out.println("Amount withdrawn successfully");
 
     }
+
     public static void showDetails() {
         System.out.println("Enter account number : ");
         int accNo = scanner.nextInt();
@@ -211,12 +254,12 @@ class Bankingapp {
         BankAccount account = findAccount(accNo);
         if (account != null) {
             account.showDetails();
-        }
-        else {
+        } else {
             System.out.println("Account not found");
         }
-       
+
     }
+
     public static void calculateInterest() {
         System.out.println("Enter account number : ");
         int accNo = scanner.nextInt();
@@ -224,8 +267,7 @@ class Bankingapp {
         BankAccount account = findAccount(accNo);
         if (account != null) {
             account.calculateInterest();
-        }
-        else {
+        } else {
             System.out.println("Account not found");
         }
     }
